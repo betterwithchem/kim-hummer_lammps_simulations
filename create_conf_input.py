@@ -6,20 +6,28 @@ import numpy as np
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, epilog=" ")
 
-parser.add_argument("-f", dest="pdb_filename", required=True, type=str, help="PDB file of the starting configuration.")
-parser.add_argument("-nmol", dest="nmolecules", required=True, type=int, nargs='+', help="number of molecules of each species in the system.")
-parser.add_argument("-lmol", dest="length_molecules", required=True, nargs='+', type=int, help="number of atoms in each molecule type. Same number of arguments and same order as -nmol.")
-parser.add_argument("-o", dest="output_conf_file", required=True, type=str, help="name of the output file with the starting conformation and topology")
+parser.add_argument("-f", dest="pdb_filename", required=True, type=str, 
+                    help="PDB file of the starting configuration.")
+parser.add_argument("-nmol", dest="nmolecules", required=True, type=int, nargs='+', 
+                    help="number of molecules of each species in the system.")
+parser.add_argument("-lmol", dest="length_molecules", required=True, nargs='+', type=int, 
+                    help="number of atoms in each molecule type. Same number of arguments and same order as -nmol.")
+parser.add_argument("-o", dest="output_conf_file", required=True, type=str, 
+                    help="name of the output file with the starting conformation and topology")
 
-parser.add_argument("-rigid", dest="rigid_ranges", type=int, nargs='+', help="list of ranges of atoms that belong to rigid bodies. Only an even number of arguments is accepted. No arguments == no rigid bodies. The ranges include the termini.")
-parser.add_argument("-rigidfile", dest="rigid_file", type=str, help="name of the file used for fix rigid commands")
+parser.add_argument("-rigid", dest="rigid_ranges", type=int, nargs='+', 
+                    help="list of ranges of atoms that belong to rigid bodies. \
+                    Only an even number of arguments is accepted. No arguments == no rigid bodies. Ranges include the termini.")
+parser.add_argument("-rigidfile", dest="rigid_file", type=str, 
+                    help="name of the file used for fix rigid commands")
 
 args	=	parser.parse_args()
 
 ################# SANITY CHECKS OF THE INPUT ARGUMENTS ###############
 
 if len(args.length_molecules)!=len(args.nmolecules):
-    print("Error! the number of molecules in the system with -nmol (%d) is different from the number of lengths given with -lmol (%d)" % (len(args.length_molecules), len(args.nmolecules)))
+    print("Error! the number of molecules in the system with -nmol (%d) is different from the number of 
+          lengths given with -lmol (%d)" % (len(args.length_molecules), len(args.nmolecules)))
     sys.exit(1)
 
 rigid_atoms=[]
@@ -62,15 +70,18 @@ if args.rigid_ranges is not None:
         rigid_f.write("neigh_modify\texclude group group_%d group_%d\n" % (i,i))
     # ^: exclude intramolecular non-bonded interactions for rigid atoms
     #    bonds between rigid atoms are excluded in the general LAMMPS input file
-
-
+    
 ### Parameters of the atom/residue types ###
 
-aatype_dict={"ALA":1,"CYS":2,"ASP":3,"GLU":4,"PHE":5,"GLY":6,"HIS":7,"ILE":8,"LYS":9,"LEU":10,"MET":11,"ASN":12,"PRO":13,"GLN":14,"ARG":15,"SER":16,"THR":17,"VAL":18,"TRP":19,"TYR":20}
+aatype_dict={"ALA":1,"CYS":2,"ASP":3,"GLU":4,"PHE":5,"GLY":6,"HIS":7,"ILE":8,"LYS":9,"LEU":10,"MET":11,
+             "ASN":12,"PRO":13,"GLN":14,"ARG":15,"SER":16,"THR":17,"VAL":18,"TRP":19,"TYR":20}
 
-masses={"GLY":57.05, "ALA":71.08, "CYS":103.1, "ASP":115.1, "GLU":129.1, "PHE":147.2, "HIS":137.1, "ILE":113.2, "LYS":128.2, "LEU":113.2, "MET":131.2, "ASN":114.1, "PRO":97.12, "GLN":128.1, "ARG":156.2, "SER":87.08, "THR":101.1, "VAL":99.07, "TRP":186.2, "TYR":163.2}
+masses={"GLY":57.05,"ALA":71.08,"CYS":103.1,"ASP":115.1,"GLU":129.1,"PHE":147.2,"HIS":137.1,"ILE":113.2, 
+        "LYS":128.2,"LEU":113.2,"MET":131.2,"ASN":114.1,"PRO":97.12,"GLN":128.1,"ARG":156.2,"SER":87.08,
+        "THR":101.1,"VAL":99.07,"TRP":186.2,"TYR":163.2}
 
-charges={"GLY":0, "ALA":0, "CYS":0, "ASP":-1, "GLU":-1, "PHE":0, "HIS":0.5, "ILE":0, "LYS":1, "LEU":0, "MET":0, "ASN":0, "PRO":0, "GLN":0, "ARG":1, "SER":0, "THR":0, "VAL":0, "TRP":0, "TYR":0}
+charges={"GLY":0,"ALA":0,"CYS":0,"ASP":-1,"GLU":-1,"PHE":0,"HIS":0.5,"ILE":0,"LYS":1,"LEU":0,"MET":0,"ASN":0,
+         "PRO":0,"GLN":0,"ARG":1,"SER":0,"THR":0,"VAL":0,"TRP":0,"TYR":0}
 
 ############################################
 
